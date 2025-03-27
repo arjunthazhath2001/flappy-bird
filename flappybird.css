@@ -4,3 +4,23 @@ body{
 #board{
     background-image: url("./assets/bg.png");
 }
+
+.game-container{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.title{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.image{
+    width: 200px;
+}
