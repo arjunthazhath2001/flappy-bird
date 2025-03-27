@@ -34,10 +34,12 @@ let pipeX = boardWidth; //starting from 360, at the top right, since y is 0. so 
 let pipeY = 0
 
 
+
 //to draw the pipe we need to load the images first. We will have 2 pipes. one at the top and the other at the bottom.
 
 let topPipeImg;
 let bottomPipeImg;
+
 
 
 //physics
@@ -45,6 +47,10 @@ let velocityX= -2 ;//pipes moving left speed
 let velocityY= 0 ;//bird jump speed
 let gravity = 0.4;
 
+
+
+let gameOver= false;
+let score=0;
 
 
 ////////// BELOW IS THE SETTINGS/FUNCTION FOR THE BOARD //////////
@@ -67,7 +73,6 @@ window.onload = function(){
         context.drawImage(birdImage,bird.x,bird.y,bird.width,bird.height);
     }
 
-
     topPipeImg= new Image();
     topPipeImg.src= "./toppipe.png"
 
@@ -79,16 +84,21 @@ window.onload = function(){
     setInterval(placePipes,1500)        //every 1.5 seconds this places a new pipe
 
     document.addEventListener("keydown",moveBird)
-
-
 }
+
+
 
 
 
 //this is gonna redraw the canvas over and over again. its our main game loop
 function update(){
+    requestAnimationFrame(update);
     
-    requestAnimationFrame(update);      
+    
+    if(gameOver) {return;}     
+
+
+
     context.clearRect(0,0, boardWidth, boardHeight); //everytime when we redraw on canvas, we have to clear the previous frame to prevent stacking of frames
 
     //as user input comes the bird image has to be redrawn again and again based on the new y-axis. INFACT THE PIPES IS WHAT THE MOVES. Not the bird.
@@ -96,6 +106,10 @@ function update(){
     //bird updation
     velocityY += gravity
     bird.y = Math.max(bird.y + velocityY, 0);    
+
+    if(bird.y>board.height){
+        gameOver=true;
+    }
     context.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height)
 
     //pipe updation
@@ -103,12 +117,37 @@ function update(){
         let pipe= pipeArray[i]
         pipe.x += velocityX
         context.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height) //we need to keep changing the x-axis of the pipe.
+
+        if(!pipe.passed && bird.x > pipe.x+pipe.width){
+            score+=0.5;
+            pipe.passed=true
+        }
+
+
+        if(detectCollision(bird,pipe)){
+            gameOver=true;
+        }
+    }
+    while(pipeArray.length>0 && pipeArray[0].x < -pipeWidth){
+        pipeArray.shift();
+    }
+
+    context.fillStyle="white";
+    context.font="45px sans-serif";
+    context.fillText(score,5,45)
+
+
+    if(gameOver){
+        context.fillText("GAME OVER",40,90)
     }
 }
 
 
 //every 1.5 seconds a new pipe will be generated 
 function placePipes(){
+
+    if(gameOver) {return;}     
+
     let randomPipeY = pipeY - (pipeHeight/4) - Math.random()*(pipeHeight/2) ;
     let openingSpace = boardHeight/4
     let topPipe={
@@ -132,8 +171,9 @@ function placePipes(){
     }
 
     pipeArray.push(bottomPipe)
-}
 
+
+}
 
 
 function moveBird(e){
@@ -141,4 +181,20 @@ function moveBird(e){
 
         velocityY= -6
     }
+
+    if(gameOver){
+        bird.y = birdY;
+        pipeArray=[];
+        score=0;
+        gameOver= false;
+    }
+}
+
+
+function detectCollision(a, b){
+    let buffer = 5; // buffer to reduce sensitivity
+    return a.x + buffer < b.x + b.width - buffer &&
+           a.x + a.width - buffer > b.x + buffer &&
+           a.y + 12 < b.y + b.height - 12 &&
+           a.y + a.height - 12 > b.y + 12
 }
