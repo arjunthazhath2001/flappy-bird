@@ -2,5 +2,5 @@ body{
     text-align: center;
 }
 #board{
-    background-image: url("./bg.png");
+    background-image: url("./assets/bg.png");
 }

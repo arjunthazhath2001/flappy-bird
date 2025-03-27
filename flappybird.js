@@ -68,16 +68,16 @@ window.onload = function(){
 
     //now lets fill in the green box with the actual image
     birdImage= new Image();     //create a new image object
-    birdImage.src="./angrybird.png";   //this is like an async operation. so only once its loaded we can drawImage on the canvas
+    birdImage.src="./assets/angrybird.png";   //this is like an async operation. so only once its loaded we can drawImage on the canvas
     birdImage.onload= function(){
         context.drawImage(birdImage,bird.x,bird.y,bird.width,bird.height);
     }
 
     topPipeImg= new Image();
-    topPipeImg.src= "./toppipe.png"
+    topPipeImg.src= "./assets/toppipe.png"
 
     bottomPipeImg = new Image();
-    bottomPipeImg.src="./bottompipe.png"
+    bottomPipeImg.src="./assets/bottompipe.png"
 
 
     requestAnimationFrame(update)
